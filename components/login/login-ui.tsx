@@ -29,7 +29,7 @@ export function LoginUI({
   isLoading,
 }: LoginUIProps) {
   const [isLogin, setIsLogin] = useState(true);
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
 
   const handleAuth = () => {
     if (isLogin) {
@@ -82,9 +82,8 @@ export function LoginUI({
         autoComplete={isLogin ? "current-password" : "new-password"}
       />
 
-      {/* Auth Button */}
-      <TouchableOpacity 
-        style={[styles.button, isLoading && styles.buttonDisabled]} 
+      <TouchableOpacity
+        style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={handleAuth}
         disabled={isLoading}
       >
@@ -92,25 +91,29 @@ export function LoginUI({
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.buttonText}>
-            {isLogin ? "Login" : "Sign Up"}
+            {isLogin ? 'Log In' : 'Sign Up'}
           </Text>
         )}
       </TouchableOpacity>
-
-      {/* Switch between Login & Signup */}
-      <TouchableOpacity 
-        style={styles.switchButton}
-        onPress={() => setIsLogin(!isLogin)}
-        disabled={isLoading}
-      >
-        <Text style={styles.switchText}>
-          {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login"}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Social Logins */}
+      <View style={styles.toggleContainer}>
+        {isLogin ? (
+          <Text style={styles.toggleText}>
+            Don't have an account?{' '}
+            <Text style={styles.toggleLink} onPress={() => setIsLogin(false)}>
+              Sign up
+            </Text>
+          </Text>
+        ) : (
+          <Text style={styles.toggleText}>
+            Already have an account?{' '}
+            <Text style={styles.toggleLink} onPress={() => setIsLogin(true)}>
+              Log in
+            </Text>
+          </Text>
+        )}
+      </View>
       <View style={styles.socialContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.socialButton, styles.facebookButton]}
           disabled={isLoading}
         >
@@ -177,14 +180,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  switchButton: {
+  toggleContainer: {
     marginTop: 16,
-    padding: 12,
     alignItems: 'center',
   },
-  switchText: {
-    color: '#007AFF',
+  toggleText: {
+    color: '#666',
     fontSize: 14,
+  },
+  toggleLink: {
+    color: '#007AFF',
+    fontWeight: '600',
   },
   socialContainer: {
     marginTop: 24,

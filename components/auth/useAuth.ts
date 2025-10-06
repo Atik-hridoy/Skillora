@@ -134,8 +134,17 @@ export const useAuth = ({ isLogin = true, onSuccess }: AuthOptions = {}) => {
         updatedAt: new Date().toISOString(),
       };
       
-      // Save the auth state
+      // Save the auth state and update the local state
       await saveAuthState(userProfile, mockToken);
+      
+      // Update the auth state immediately
+      setAuthState(prev => ({
+        ...prev,
+        user: userProfile,
+        token: mockToken,
+        isAuthenticated: true,
+        isLoading: false
+      }));
       
       console.log(isLogin ? 'Logged in successfully' : 'Registered successfully', { email, name });
       
@@ -162,7 +171,13 @@ export const useAuth = ({ isLogin = true, onSuccess }: AuthOptions = {}) => {
   // Update user profile
   const updateProfile = useCallback(async (profileData: Partial<UserProfile>) => {
     if (!authState.user) {
-      throw new Error('User not authenticated');
+      // Try to load auth state first
+      await loadAuthState();
+      
+      // If still not authenticated, throw error
+      if (!authState.user) {
+        throw new Error('User not authenticated');
+      }
     }
 
     try {
@@ -177,8 +192,14 @@ export const useAuth = ({ isLogin = true, onSuccess }: AuthOptions = {}) => {
         updatedAt: new Date().toISOString(),
       };
       
-      // Save updated user to storage
-      await saveAuthState(updatedUser, authState.token);
+      // Save updated user to storage and update state
+      await saveAuthState(updatedUser, authState.token || '');
+      
+      // Update the auth state with the new user data
+      setAuthState(prev => ({
+        ...prev,
+        user: updatedUser
+      }));
       
       return { success: true, user: updatedUser };
     } catch (error) {
@@ -187,7 +208,7 @@ export const useAuth = ({ isLogin = true, onSuccess }: AuthOptions = {}) => {
     } finally {
       setIsLoading(false);
     }
-  }, [authState.user, authState.token, saveAuthState]);
+  }, [authState.user, authState.token, saveAuthState, loadAuthState]);
 
   // Logout user
   const logout = useCallback(async () => {
