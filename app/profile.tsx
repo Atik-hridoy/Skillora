@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import ProfileSetup from '../components/profile/ProfileSetup';
+import ProfileSetup from '../components/profile/ProfileSetupUI';
 
 export default function ProfileScreen() {
   const handleComplete = () => {
